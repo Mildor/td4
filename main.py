@@ -29,6 +29,59 @@ df = pandas.DataFrame(data, columns=["titre", "votes", "answers"])
 
 df.to_csv("data.csv", index=0)
 
+#Â ex4
+
+payload = {
+    "submit-form": "",
+    "zone-item-id": "zoneItem://c8e50408-29b9-4eb9-9b3f-1c209fb2d75b",
+    "catalog": "odf-2018-2022",
+    "title": "",
+    "textfield": "",
+    "degree": "DP",
+    "orgUnit": "",
+    "place": ""
+}
+r = requests.get('http://formation.univ-orleans.fr/fr/formation/rechercher-une-formation.html#nav', params=payload)
+soup = BeautifulSoup(r.text, "lxml")
+liste_titres = soup.find("ul", class_="custom")
+titres = liste_titres.find_all('strong')
+for titre in titres:
+    print(titre.text)
+
+payload2 = {
+    "submit-form": "",
+    "zone-item-id": "zoneItem://c8e50408-29b9-4eb9-9b3f-1c209fb2d75b",
+    "catalog": "odf-2018-2022",
+    "title": "",
+    "textfield": "Ecologie",
+    "degree": "XB",
+    "orgUnit": "",
+    "place": ""
+}
+r2 = requests.get('http://formation.univ-orleans.fr/fr/formation/rechercher-une-formation.html#nav', params=payload2)
+soup2 = BeautifulSoup(r2.text, "lxml")
+liste_titres = soup2.find("ul", class_="custom")
+titres = liste_titres.find_all('strong')
+for titre in titres:
+    print(titre.text)
+
+payload3 = {
+    "submit-form": "",
+    "zone-item-id": "zoneItem://c8e50408-29b9-4eb9-9b3f-1c209fb2d75b",
+    "catalog": "odf-2018-2022",
+    "title": "",
+    "textfield": "",
+    "degree": "",
+    "orgUnit": "",
+    "place": "45000"
+}
+r3 = requests.get('http://formation.univ-orleans.fr/fr/formation/rechercher-une-formation.html#nav', params=payload3)
+soup3 = BeautifulSoup(r3.text, "lxml")
+liste_titres = soup3.find("ul", class_="custom")
+titres = liste_titres.find_all('strong')
+for titre in titres:
+    print(titre.text)
+
 
 def get_definition(x):
     """ Get word definition from online dictionnary"""
