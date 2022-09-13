@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 import pandas
 
+
 UNI = requests.get("https://stackoverflow.com/questions/tagged/beautifulsoup")
 
 quest = BeautifulSoup(UNI.text, 'lxml')
@@ -29,9 +30,46 @@ df = pandas.DataFrame(data, columns=["titre", "votes", "answers"])
 
 df.to_csv("data.csv", index=0)
 
-#Â ex4
+# Â ex4
+def get_pagination(payload_def):
+    r = requests.get('http://formation.univ-orleans.fr/fr/formation/rechercher-une-formation.html#nav',
+                     params=payload_def)
+    soup = BeautifulSoup(r.text, "lxml")
+    pagemaxinput = soup.find('input', title='Aller à la dernière page')
+    if pagemaxinput != None:
+        lastPage = pagemaxinput.get('name')
+        findchar = lastPage.find("-")
+        pagination = lastPage[findchar+1:]
+        return pagination
+    else:
+        return 1
 
-payload = {
+
+def get_all_pages(payload_dynamic, pagination_def):
+    i = 1
+    while i <= int(pagination_def):
+        payload_dyn = {
+            "submit-form": payload_dynamic['submit-form'],
+            "zone-item-id": payload_dynamic['zone-item-id'],
+            "catalog": payload_dynamic['catalog'],
+            "title": payload_dynamic['title'],
+            "textfield": payload_dynamic['textfield'],
+            "degree": payload_dynamic['degree'],
+            "orgUnit": payload_dynamic['orgUnit'],
+            "place": payload_dynamic['place'],
+            "page-" + str(i): str(i)
+        }
+        req = requests.get('http://formation.univ-orleans.fr/fr/formation/rechercher-une-formation.html#nav',
+                           params=payload_dyn)
+        html = BeautifulSoup(req.text, "lxml")
+        titli = html.find("ul", class_="custom")
+        tit = titli.find_all('strong')
+        for titre in tit:
+            print(titre.text)
+        i += 1
+
+
+payload_lp = {
     "submit-form": "",
     "zone-item-id": "zoneItem://c8e50408-29b9-4eb9-9b3f-1c209fb2d75b",
     "catalog": "odf-2018-2022",
@@ -41,14 +79,11 @@ payload = {
     "orgUnit": "",
     "place": ""
 }
-r = requests.get('http://formation.univ-orleans.fr/fr/formation/rechercher-une-formation.html#nav', params=payload)
-soup = BeautifulSoup(r.text, "lxml")
-liste_titres = soup.find("ul", class_="custom")
-titres = liste_titres.find_all('strong')
-for titre in titres:
-    print(titre.text)
 
-payload2 = {
+# pagination_lp = get_pagination(payload_lp)
+# get_all_pages(payload_lp, pagination_lp)
+
+payload_master = {
     "submit-form": "",
     "zone-item-id": "zoneItem://c8e50408-29b9-4eb9-9b3f-1c209fb2d75b",
     "catalog": "odf-2018-2022",
@@ -58,14 +93,10 @@ payload2 = {
     "orgUnit": "",
     "place": ""
 }
-r2 = requests.get('http://formation.univ-orleans.fr/fr/formation/rechercher-une-formation.html#nav', params=payload2)
-soup2 = BeautifulSoup(r2.text, "lxml")
-liste_titres = soup2.find("ul", class_="custom")
-titres = liste_titres.find_all('strong')
-for titre in titres:
-    print(titre.text)
+# pagination_master = get_pagination(payload_master)
+# get_all_pages(payload_master, pagination_master)
 
-payload3 = {
+payload_orleans = {
     "submit-form": "",
     "zone-item-id": "zoneItem://c8e50408-29b9-4eb9-9b3f-1c209fb2d75b",
     "catalog": "odf-2018-2022",
@@ -75,12 +106,9 @@ payload3 = {
     "orgUnit": "",
     "place": "45000"
 }
-r3 = requests.get('http://formation.univ-orleans.fr/fr/formation/rechercher-une-formation.html#nav', params=payload3)
-soup3 = BeautifulSoup(r3.text, "lxml")
-liste_titres = soup3.find("ul", class_="custom")
-titres = liste_titres.find_all('strong')
-for titre in titres:
-    print(titre.text)
+
+pagination_orleans = get_pagination(payload_orleans)
+get_all_pages(payload_orleans, pagination_orleans)
 
 
 def get_definition(x):
