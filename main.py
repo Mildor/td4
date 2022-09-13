@@ -85,7 +85,6 @@ for titre in titres:
 
 def get_definition(x):
     """ Get word definition from online dictionnary"""
-    clean = []
     url = 'https://www.le-dictionnaire.com/definition/{0}'.format(x)
     ref = requests.get(url)
     html = BeautifulSoup(ref.text, 'lxml')
